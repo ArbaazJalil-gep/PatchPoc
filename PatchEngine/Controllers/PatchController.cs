@@ -48,7 +48,7 @@ namespace PatchEngine.Controllers
 
 
              
-           var differences = JsonComparer.Compare(left, right,"");
+           var differences = new JsonComparer().Compare(left, right,"");
 
             return Newtonsoft.Json.JsonConvert.SerializeObject(differences); ;
             //return Newtonsoft.Json.JsonConvert.SerializeObject(patches);
@@ -69,7 +69,7 @@ namespace PatchEngine.Controllers
             
             
             // Merge the JSON objects based on the user-selected differences
-            JToken mergedJson = JsonComparer.Merge(left, userSelectedDifferences);
+            JToken mergedJson = new JsonComparer().Merge(left, userSelectedDifferences);
            
            return Newtonsoft.Json.JsonConvert.SerializeObject(mergedJson); ;
             //return Newtonsoft.Json.JsonConvert.SerializeObject(patches);

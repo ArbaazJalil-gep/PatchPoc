@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
+using PatchEngine.Implementations;
+using PatchEngine.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -11,9 +13,9 @@ namespace PatchEngine.Core
         public JToken RightValue { get; set; }
     }
 
-    public class JsonComparer
+    public class JsonComparer : IJsonComparer
     {
-        public static JArray Compare(JToken left, JToken right, string path = "")
+        public JArray Compare(JToken left, JToken right, string path = "")
         {
             JArray differences = new JArray();
 
@@ -28,108 +30,15 @@ namespace PatchEngine.Core
             }
             else if (left.Type == JTokenType.Object)
             {
-                var leftObject = (JObject)left;
-                var rightObject = (JObject)right;
 
-                var allKeys = leftObject.Properties().Select(p => p.Name)
-                    .Union(rightObject.Properties().Select(p => p.Name));
-
-                foreach (string key in allKeys)
-                {
-                    string childPath = path == "" ? key : $"{path}.{key}";
-
-                    if (leftObject.TryGetValue(key, out JToken leftValue))
-                    {
-                        if (rightObject.TryGetValue(key, out JToken rightValue))
-                        {
-                            differences.Merge(Compare(leftValue, rightValue, childPath));
-                        }
-                        else
-                        {
-                            differences.Add(new JObject
-                            {
-                                ["Path"] = childPath,
-                                ["LeftValue"] = leftValue,
-                                ["RightValue"] = null
-                            });
-                        }
-                    }
-                    else
-                    {
-                        differences.Add(new JObject
-                        {
-                            ["Path"] = childPath,
-                            ["LeftValue"] = null,
-                            ["RightValue"] = rightObject[key]
-                        });
-                    }
-
-                }
+                differences.Merge(new SimpleObjectComparer(left, right, path).Compare());
             }
             else if (left.Type == JTokenType.Array)
             {
-                var leftArray = (JArray)left;
-                var rightArray = (JArray)right;
 
-                var visitedRightItems = new HashSet<int>();
-
-                if (isArrayWithoutId(leftArray))
-                {
-                   // leftArray.MergeRegularArrays()
-                }
-
-                for (int leftIndex = 0; leftIndex < leftArray.Count; leftIndex++)
-                {
-                    string childPath = $"{path}:{leftArray[leftIndex]["Id"]?.ToString()}";
-
-
-
-                    bool foundMatch = false;
-
-                    for (int rightIndex = 0; rightIndex < rightArray.Count; rightIndex++)
-                    {
-                        if (visitedRightItems.Contains(rightIndex))
-                        {
-                            continue;
-                        }
-
-                        if (leftArray[leftIndex]["Id"]?.ToString() == rightArray[rightIndex]["Id"]?.ToString())
-                        {
-
-                            foundMatch = true;
-                            visitedRightItems.Add(rightIndex);
-                            differences.Merge(Compare(leftArray[leftIndex], rightArray[rightIndex], childPath));
-                            break;
-                        }
-                    }
-
-                    if (!foundMatch)
-                    {
-                        differences.Add(new JObject
-                        {
-                            ["Path"] = $"{path}:{leftArray[leftIndex]["Id"]}",
-                            ["LeftValue"] = leftArray[leftIndex],
-                            ["RightValue"] = null
-                        });
-                    }
-                }
-
-                for (int rightIndex = 0; rightIndex < rightArray.Count; rightIndex++)
-                {
-                   
-
-                    if (!visitedRightItems.Contains(rightIndex))
-                    {
-                        differences.Add(new JObject
-                        {
-                            ["Path"] = $"{path}:{rightArray[rightIndex]["Id"]}",
-                            ["LeftValue"] = null,
-                            ["RightValue"] = rightArray[rightIndex]
-                        });
-                    }
-                }
+                differences.Merge(new ArrayWithIdentityObjects(left, right, path).Compare());
             }
-            else if (!JToken.DeepEquals(left, right))
+            else if (!JToken.DeepEquals(left, right)) // simple values
             {
                 differences.Add(new JObject
                 {
@@ -137,31 +46,29 @@ namespace PatchEngine.Core
                     ["LeftValue"] = left,
                     ["RightValue"] = right
                 });
-            }           
+            }
 
             return differences;
         }
 
-        private static bool isArrayWithoutId(JArray leftArray)
-        {
-            foreach (var item in leftArray)
-            {
-                if (item is JObject obj && obj.ContainsKey("Id"))
-                {
-                    return false;
-                }
-            }
 
-            return true;
-        }
 
-        public static JToken Merge(JToken left , List<Difference> selectedDiffs)
+        public JToken Merge(JToken left, List<Difference> selectedDiffs, int level = 0)
         {
             JToken merged = left.DeepClone();
+            int idx = 0;
             foreach (var diff in selectedDiffs)
             {
                 JToken parent = GetParent(merged, diff.Path);
-                string propertyName = GetPropertyName(diff.Path);
+                string propertyName = "";
+                if (isArrayIndexSegmet(diff.Path))
+                {
+                    propertyName = GetLastArrayIndexSegment(diff.Path); //get index [index]
+                }
+                else
+                {
+                    propertyName = GetPropertyName(diff.Path);
+                }
 
                 if (parent != null)
                 {
@@ -172,19 +79,55 @@ namespace PatchEngine.Core
                     }
                     else if (parent.Type == JTokenType.Array)
                     {
-                        JArray parentArray = (JArray)parent;
-                        int index = parentArray.IndexOf(parentArray.FirstOrDefault(x => x["Id"]?.ToString() == propertyName));
-
-                        if (index >= 0)
+                        if (((JArray)parent).isArrayWithoutId()) // simple array
                         {
-                            parentArray[index] = diff.RightValue.HasValues ? diff.RightValue :diff.LeftValue;
+                            //leftValue RightValue path
+
+
+                            JArray parentArray = (JArray)parent;
+                          
+                             
+                                 int  index = diff.Path.ReturnIndexValue(level + 1);
+                             
+                           
+
+                          
+                            if (parentArray.Count > index)
+                            {
+                                if(parent[index].Type == JTokenType.Array)
+                                {
+                                    parent[index] = Merge(parent[index], new List<Difference>() { diff }, level+1);
+                                }
+                                else
+                                {
+                                    parentArray[index] = diff.RightValue;
+                                }
+                            }
+                            else
+                            {
+                                parentArray.Add(diff.RightValue);
+                            }
+                                
+
                         }
                         else
                         {
+                            JArray parentArray = (JArray)parent;
+                            int index = parentArray.IndexOf(parentArray.FirstOrDefault(x => x["Id"]?.ToString() == propertyName));
+
+                            if (index >= 0)
+                            {
+                                parentArray[index] = diff.RightValue.HasValues ? diff.RightValue : diff.LeftValue;
+                            }
+                            else
+                            {
                                 parentArray.Add(diff.RightValue);
+                            }
                         }
+
                     }
                 }
+                idx++;
             }
 
             return merged;
@@ -193,36 +136,65 @@ namespace PatchEngine.Core
 
         private static JToken GetParent(JToken token, string path)
         {
-                if (string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 return null;
             }
-          var p  = path.Split(".").ToList();
-          
+            var p = path.Split(".").ToList();
+
             if (p.Last().Contains(":"))
             {
                 var l = p.Last().Split(':')[1];
                 var f = p.Last().Split(':')[0];
 
 
-                p[p.Count-1] = f;
+                p[p.Count - 1] = f;
                 //p.Add(l);
+            }
+            else if (isArrayIndexSegmet(p.Last()))
+            {
+                p[p.Count - 1] = RemoveIndexFromString(p.Last()); //removing [index] from last segment
             }
             else
             {
-                if(p.Count>1)
+                if (p.Count > 1)
                 {
                     var secondlast = p[p.Count - 2];
                     if (secondlast.Contains(":")) p.RemoveAt(p.Count - 1);
                     else
                         p.RemoveAt(p.Count - 1);
                 }
-               
+                else
+                {
+                    return SelectTokenByPath(token, "/"); // return root object
+                }
+
             }
-              return  SelectTokenByPath(token, String.Join(".", p.ToArray()));
+            string tokenPath = String.Join(".", p.ToArray());
+            if (tokenPath == null || tokenPath == "") tokenPath = "/";
+            return SelectTokenByPath(token, tokenPath);
         }
 
+        private static string RemoveIndexFromString(string input)
+        {
+            // Find the position of the last opening square bracket '['
+            int lastOpenBracket = input.LastIndexOf('[');
 
+            // Check if the last opening square bracket '[' was found
+            if (lastOpenBracket != -1)
+            {
+                // Return the string without the index part
+                return input.Substring(0, lastOpenBracket);
+            }
+
+            // If the input string does not contain an index, return the input string unchanged
+            return input;
+        }
+
+        private static bool isArrayIndexSegmet(string segment)
+        {
+            return segment.Contains("[") && segment.Contains("]");
+        }
         public static JToken SelectTokenByPath(JToken root, string path)
         {
             if (root == null || string.IsNullOrEmpty(path))
@@ -248,6 +220,7 @@ namespace PatchEngine.Core
 
                 if (currentToken == null)
                 {
+                    currentToken = root;// return took if there is no parent
                     break;
                 }
             }
@@ -260,6 +233,13 @@ namespace PatchEngine.Core
             string[] parts = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             string lastPart = parts.LastOrDefault();
             return lastPart.Contains(":") ? lastPart.Split(':')[1] : lastPart;
+        }
+        private static string GetLastArrayIndexSegment(string path)
+        {
+            string[] parts = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            string lastPart = parts.LastOrDefault();
+
+            return isArrayIndexSegmet(lastPart) ? lastPart.RemoveIndex() : lastPart;
         }
 
     }
