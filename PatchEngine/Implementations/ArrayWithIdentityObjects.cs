@@ -31,12 +31,13 @@ namespace PatchEngine.Implementations
             for (int leftIndex = 0; leftIndex < _leftArray.Count; leftIndex++)
             {
                 string childPath = "";
-                if (JArrayExtentions.isArrayWithoutId(_leftArray))
+                if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // check array item instead
                 {
                     childPath = $"{path}[{leftIndex}]"?.ToString();
                 }
                 else
                 {
+             
                     childPath = $"{path}:{_leftArray[leftIndex]["Id"]?.ToString()}";
                 }
 
@@ -49,7 +50,7 @@ namespace PatchEngine.Implementations
                         continue;
                     }
 
-                    if (_leftArray.isArrayWithoutId()) // simple array
+                    if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // simple array
                     {
                         if (_leftArray[leftIndex]?.ToString() == _rightArray[rightIndex]?.ToString())
                         {
@@ -60,6 +61,13 @@ namespace PatchEngine.Implementations
                             break;
                         }
                         else if(_leftArray[leftIndex].Type == JTokenType.Array  && _rightArray[rightIndex].Type == JTokenType.Array) // if left and right element are both array (nested array detected)
+                        {
+                            visitedRightItems.Add(rightIndex); // not sure if this make any difference or even if it should be here
+                            _differences.Merge(base.Compare(_leftArray[leftIndex], _rightArray[rightIndex], childPath));
+                            nestedArrayCase = true;
+                            break;
+                        }
+                        else  if(_leftArray[leftIndex].Type == JTokenType.Object && _rightArray[rightIndex].Type == JTokenType.Object)// if Object
                         {
                             visitedRightItems.Add(rightIndex); // not sure if this make any difference or even if it should be here
                             _differences.Merge(base.Compare(_leftArray[leftIndex], _rightArray[rightIndex], childPath));

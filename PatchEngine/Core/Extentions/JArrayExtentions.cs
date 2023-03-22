@@ -30,5 +30,26 @@ namespace PatchEngine.Core.Extentions
 
             return true;
         }
+        public static bool isMixedArray(this JArray leftArray)
+        {
+            bool hasIdentityObject = false;
+            bool hasNonIdentityObject = false;
+
+            foreach (var item in leftArray)
+            {
+                if (item is JObject obj && obj.ContainsKey("Id"))
+                {
+                      hasIdentityObject = true;
+                }
+                else
+                {
+                    hasNonIdentityObject = true;
+                }
+            }
+
+            return hasIdentityObject && hasNonIdentityObject;
+        }
+
+        
     }
 }

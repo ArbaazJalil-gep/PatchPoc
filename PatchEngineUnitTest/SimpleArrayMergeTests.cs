@@ -205,6 +205,29 @@ namespace PatchEngineUnitTest
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
+
+
+        [Fact]
+        public void TestMerge7()
+        {
+
+            // Arrange
+            JsonComparer obj = new JsonComparer();
+            var objParsed = JObject.Parse("{\"left\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"selected\":[{\"Path\":\"[3].name\",\"LeftValue\":\"Charlie\",\"RightValue\":\"Charlie!!\"}]}");
+
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
+            // Act
+            JToken result = obj.Merge(left, selectedDiffs);
+
+            // Act
+
+            JToken expectedResult = JToken.Parse("[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie!!\"}]");
+
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+
+        }
+
     }
 
 

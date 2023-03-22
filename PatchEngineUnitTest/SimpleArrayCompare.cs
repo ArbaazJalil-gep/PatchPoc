@@ -42,5 +42,22 @@ namespace PatchEngineUnitTest
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
+
+        [Fact]
+        public void TestCompare3()
+        {
+            // Arrange
+            var objParsed = JObject.Parse("{\"left\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"right\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie!!\"}]}");
+
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var right = JToken.Parse(objParsed["right"].ToString());
+
+            // Act
+            JToken result = new JsonComparer().Compare(left, right, "");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[3].name\",\"LeftValue\":\"Charlie\",\"RightValue\":\"Charlie!!\"}]");
+
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+
+        }
     }
 }

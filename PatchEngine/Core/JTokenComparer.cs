@@ -58,9 +58,13 @@ namespace PatchEngine.Core
             {
                 JToken parent = merged.GetParent(diff.Path);
                 string propertyName = "";
-                 if (diff.Path.isArrayIndexSegmet())
+                if (diff.Path.isArrayIndexSegmet())
                 {
                     propertyName = diff.Path.GetLastArrayIndexSegment(); //get index [index]
+                    if (propertyName.Contains(":"))
+                    {
+                        propertyName = diff.Path.GetPropertyName();
+                    }
                 }
                 else
                 {
@@ -81,7 +85,7 @@ namespace PatchEngine.Core
                             //leftValue RightValue path
                             JArray parentArray = (JArray)parent;
                             int index = diff.Path.ReturnIndexValue(level + 1);
-                            
+
                             if (parentArray.Count > index)
                             {
                                 if (parent[index].Type == JTokenType.Array)
@@ -101,7 +105,7 @@ namespace PatchEngine.Core
                         else
                         {
                             JArray parentArray = (JArray)parent;
-                            int index = parentArray.IndexOf(parentArray.FirstOrDefault(x => x["Id"]?.ToString() == propertyName));
+                            int index = parentArray.IndexOf(parentArray.FirstOrDefault(x => x?["Id"]?.ToString() == propertyName));
 
                             if (index >= 0)
                             {
