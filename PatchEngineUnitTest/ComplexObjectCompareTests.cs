@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PatchEngineUnitTest
 {
-    public class ComplexObjectTests
+    public class ComplexObjectCompareTests
     {
         [Fact]
         public void TestComplexObectCompare()
@@ -64,5 +64,7 @@ namespace PatchEngineUnitTest
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
+        
+
     }
 }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="Core\JsonPatchGeneratorGpt4.cs" />
+    <Compile Remove="Core\Patcher.cs" />
   </ItemGroup>
 
   <ItemGroup>

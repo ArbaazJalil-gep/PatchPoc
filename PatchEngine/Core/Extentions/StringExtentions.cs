@@ -1,10 +1,10 @@
-﻿namespace PatchEngine.Core
+﻿namespace PatchEngine.Core.Extentions
 {
     public static class StringExtentions
     {
         public static string RemoveIndex(this string path)
         {
-            return path.Substring(0, path.LastIndexOf('['));
+            return path.Substring(0, path.IndexOf('['));
         }
 
         public static int ReturnIndexValue(this string path, int nth = 1)
@@ -47,5 +47,38 @@
 
             return -1;
         }
+        public static string RemoveIndexFromString(this string input)
+        {
+            // Find the position of the last opening square bracket '['
+            int lastOpenBracket = input.LastIndexOf('[');
+
+            // Check if the last opening square bracket '[' was found
+            if (lastOpenBracket != -1)
+            {
+                // Return the string without the index part
+                return input.Substring(0, lastOpenBracket);
+            }
+
+            // If the input string does not contain an index, return the input string unchanged
+            return input;
+        }
+        public static bool isArrayIndexSegmet(this string segment)
+        {
+            return segment.Contains("[") && segment.Contains("]");
+        }
+        public static string GetPropertyName(this string path)
+        {
+            string[] parts = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            string lastPart = parts.LastOrDefault();
+            return lastPart.Contains(":") ? lastPart.Split(':')[1] : lastPart;
+        }
+        public static string GetLastArrayIndexSegment(this string path)
+        {
+            string[] parts = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            string lastPart = parts.LastOrDefault();
+
+            return lastPart.isArrayIndexSegmet() ? lastPart.RemoveIndex() : lastPart;
+        }
     }
+
 }

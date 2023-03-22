@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace PatchEngine.Core
+namespace PatchEngine.Core.Extentions
 {
     public static class JArrayExtentions
     {

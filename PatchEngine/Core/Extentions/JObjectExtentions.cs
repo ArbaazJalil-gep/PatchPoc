@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace PatchEngine.Core
+namespace PatchEngine.Core.Extentions
 {
     public static class JObjectExtentions
     {
@@ -32,7 +32,7 @@ namespace PatchEngine.Core
             {
                 if (merged[property.Name] is JObject obj)
                 {
-                    MergeRegularObjects(obj, property.Value as JObject);
+                    obj.MergeRegularObjects(property.Value as JObject);
                 }
                 else
                 {
@@ -42,5 +42,5 @@ namespace PatchEngine.Core
             return merged.ToObject<JObject>();
         }
     }
-    
+
 }
