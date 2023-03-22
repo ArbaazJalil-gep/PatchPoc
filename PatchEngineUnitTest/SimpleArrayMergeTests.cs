@@ -210,24 +210,32 @@ namespace PatchEngineUnitTest
         [Fact]
         public void TestMerge7()
         {
-
             // Arrange
             JsonComparer obj = new JsonComparer();
             var objParsed = JObject.Parse("{\"left\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"selected\":[{\"Path\":\"[3].name\",\"LeftValue\":\"Charlie\",\"RightValue\":\"Charlie!!\"}]}");
-
             var left = JToken.Parse(objParsed["left"].ToString());
             var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
             // Act
             JToken result = obj.Merge(left, selectedDiffs);
-
             // Act
-
             JToken expectedResult = JToken.Parse("[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie!!\"}]");
-
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
-
         }
 
+        [Fact]
+        public void TestMerge8()
+        {
+            // Arrange
+            JsonComparer obj = new JsonComparer();
+            var objParsed = JObject.Parse("{\"left\":{\"simpleObject\":{\"level1a\":{\"level2a\":{\"level3a\":\"level 3\"}},\"simpleArray\":[1,2,3,[10,20,[100,200]]]},\"identityObject\":{\"Id\":\"10001\",\"name\":\"Arbaaz\",\"simpleArrayInsideIdentityObject\":[4,5,6,[30,40,[300,400]]],\"nestedObject\":{\"Id\":\"10002\",\"name\":\"NestedIdentityObject\",\"details\":{\"age\":25,\"city\":\"San Francisco\"}}},\"arrayWithIdentityObjects\":[{\"Id\":\"10003\",\"name\":\"Alice\"},{\"Id\":\"10004\",\"name\":\"Bob\",\"simpleArrayInsideIdentityObject\":[7,8,9,[50,60,[500,600]]]}],\"mixedArray\":[1,2,3,{\"mixedArray\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"},{\"Id\":\"10006\",\"name\":\"Diana\",\"simpleArrayInsideIdentityObject\":[11,12,13,[70,80,[700,800]]],\"nestedObject\":{\"Id\":\"10007\",\"name\":\"NestedIdentityObject2\",\"details\":{\"age\":30,\"city\":\"New York\"}}},[14,15,16,[90,100,[900,1000]]],{\"level1b\":{\"level2b\":{\"level3b\":\"level 3\"}}}]}]},\"selected\":[{\"Path\":\"identityObject.nestedObject.details.city\",\"LeftValue\":\"San Francisco\",\"RightValue\":\"San Francisco!!!\"},{\"Path\":\"arrayWithIdentityObjects:10004.simpleArrayInsideIdentityObject[3][2][1]\",\"LeftValue\":600,\"RightValue\":null},{\"Path\":\"mixedArray[3].mixedArray[4].simpleArrayInsideIdentityObject[3][2][0]\",\"LeftValue\":700,\"RightValue\":700111}]}");
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
+            // Act
+            JToken result = obj.Merge(left, selectedDiffs);
+            // Act
+            JToken expectedResult = JToken.Parse("{\"simpleObject\":{\"level1a\":{\"level2a\":{\"level3a\":\"level 3\"}},\"simpleArray\":[1,2,3,[10,20,[100,200]]]},\"identityObject\":{\"Id\":\"10001\",\"name\":\"Arbaaz\",\"simpleArrayInsideIdentityObject\":[4,5,6,[30,40,[300,400]]],\"nestedObject\":{\"Id\":\"10002\",\"name\":\"NestedIdentityObject\",\"details\":{\"age\":25,\"city\":\"San Francisco!!!\"}}},\"arrayWithIdentityObjects\":[{\"Id\":\"10003\",\"name\":\"Alice\"},{\"Id\":\"10004\",\"name\":\"Bob\",\"simpleArrayInsideIdentityObject\":[7,8,9,[50,60,[500,600,null]]]}],\"mixedArray\":[1,2,3,{\"mixedArray\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"},{\"Id\":\"10006\",\"name\":\"Diana\",\"simpleArrayInsideIdentityObject\":[11,12,13,[70,80,[700,800,700111]]],\"nestedObject\":{\"Id\":\"10007\",\"name\":\"NestedIdentityObject2\",\"details\":{\"age\":30,\"city\":\"New York\"}}},[14,15,16,[90,100,[900,1000]]],{\"level1b\":{\"level2b\":{\"level3b\":\"level 3\"}}}]}]}");
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+        }
     }
 
 

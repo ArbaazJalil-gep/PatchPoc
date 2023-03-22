@@ -30,7 +30,7 @@ namespace PatchEngineUnitTest
         }
 
         [Fact]
-        public void SimpleObjectSuperNestedObjectWithSuperNestedArraysTest()  
+        public void SimpleObjectSuperNestedObjectWithSuperNestedArraysTest()
         {
             //nested object has simple arrays
 
@@ -49,7 +49,7 @@ namespace PatchEngineUnitTest
         }
 
         [Fact]
-        public void SimpleObjectSuperNestedObjectWithSuperNestedArraysTest2()  
+        public void SimpleObjectSuperNestedObjectWithSuperNestedArraysTest2()
         {
             //nested object has simple arrays
 
@@ -81,6 +81,25 @@ namespace PatchEngineUnitTest
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
             JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.layout\",\"LeftValue\":\"12\",\"RightValue\":\"13\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-16784476843.title\",\"LeftValue\":\"First\",\"RightValue\":\"A\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-000000001\",\"LeftValue\":{\"Id\":\"widget-000000001\",\"title\":\"Should GetMerged\",\"behaviour\":{\"Id\":\"behaviour1\",\"isVisible\":true,\"isDraggable\":\"no\",\"extraPropertyInLeft\":\"yep i am extra\"}},\"RightValue\":null},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-22224476843\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"widget-22224476843\",\"title\":\"B\",\"behaviour\":{\"Id\":\"behaviour2\",\"isVisible\":true,\"isDraggable\":\"no\"}}},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.label\",\"LeftValue\":\"Field Name\",\"RightValue\":\"New Field Name\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.behaviour.autoRender\",\"LeftValue\":false,\"RightValue\":true},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.attributes.textAlign\",\"LeftValue\":\"left\",\"RightValue\":\"right\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.navigation.sections:sections1.title\",\"LeftValue\":\"untitled\",\"RightValue\":\"SomeTitle\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.heading.title\",\"LeftValue\":\"Untitled\",\"RightValue\":\"cool heading\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.heading.secondaryTitle\",\"LeftValue\":\"SecondTitle\",\"RightValue\":null},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.toolbar\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"t1\",\"toolbarName\":\"Fancy Toolbar\"}}]");
+
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+
+        }
+
+        [Fact]
+        public void Test4()
+        {
+            //nested object has simple arrays
+
+            // Arrange
+            var objParsed = JObject.Parse("{\"left\":[1,2,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"right\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie!!\"}]}");
+
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var right = JToken.Parse(objParsed["right"].ToString());
+
+            // Act
+            JToken result = new JsonComparer().Compare(left, right, "");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[2]\",\"LeftValue\":{\"Id\":\"10005\",\"name\":\"Charlie\"},\"RightValue\":3},{\"Path\":\"[3]\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"10005\",\"name\":\"Charlie!!\"}}]");
 
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 

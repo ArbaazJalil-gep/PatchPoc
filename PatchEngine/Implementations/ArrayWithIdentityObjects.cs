@@ -52,6 +52,7 @@ namespace PatchEngine.Implementations
 
                     if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // simple array
                     {
+                        if (rightIndex > leftIndex) continue;
                         if (_leftArray[leftIndex]?.ToString() == _rightArray[rightIndex]?.ToString())
                         {
                             foundMatch = true;
@@ -74,6 +75,14 @@ namespace PatchEngine.Implementations
                             nestedArrayCase = true;
                             break;
                         }
+                        //else if (_leftArray[leftIndex].Type !=_rightArray[rightIndex].Type )// if Object
+                        //{
+                        //    visitedRightItems.Add(rightIndex); // not sure if this make any difference or even if it should be here
+                        //    _differences.Merge(base.Compare(_leftArray[leftIndex], _rightArray[rightIndex], childPath));
+                        //    nestedArrayCase = true;
+                        //    break;
+                        //}
+                        //last three else are same
                     }
                     else if (_leftArray[leftIndex]["Id"]?.ToString() == _rightArray[rightIndex]["Id"]?.ToString())
                     {
@@ -87,7 +96,7 @@ namespace PatchEngine.Implementations
                 if (nestedArrayCase) continue;
                 if (!foundMatch)
                 {
-                    if (_leftArray.isArrayWithoutId()) // simple array
+                    if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // simple array
                     {
 
                         if (doesPathExist($"{path}[{leftIndex}]")) continue;
@@ -114,7 +123,7 @@ namespace PatchEngine.Implementations
             int maxCount = 0;
            
 
-            if (_leftArray.isArrayWithoutId()) // simple array
+            if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // simple array
             {
                 maxCount = _rightArray.Count;
                 if (_rightArray.Count > _leftArray.Count)
@@ -127,7 +136,7 @@ namespace PatchEngine.Implementations
             {
                 var childPath = $"{path}[{rightIndex}]";
 
-                if (_leftArray.isArrayWithoutId()) // simple array
+                if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // simple array
                 {
                     if (doesPathExist(childPath)) continue;
                     _differences.Add(new JObject

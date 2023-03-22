@@ -55,5 +55,18 @@ namespace PatchEngineUnitTest
             JToken expectedResult = JToken.Parse("{\"level1\":{\"level2a\":{\"level3a\":{\"level4a\":{\"level5a\":\"value1\",\"level5b\":\"value2\"},\"level4b\":{\"level5c\":\"value3\",\"level5d\":\"value4\"}},\"level3b\":{\"level4c\":{\"level5e\":\"value5\",\"level5f\":\"value6\"},\"level4d\":{\"level5g\":\"value7\",\"level5h\":[[[[[1,2],[3,4]],[[5,6],[7,8]]],[[[9,10],[11,12]],[[13,14],[15,16]]]],[[[[17,18],[19,20]],[[21,22],[23,24]]],[[[25,26],[27,28]],[[29,30],[{\"Id\":1,\"widgetManager\":{\"Id\":\"widgetManager1\",\"layout\":\"13\",\"widgets\":[{\"Id\":\"widget-16784476843\",\"title\":\"A\",\"behaviour\":{\"Id\":\"000\",\"isVisible\":true,\"isDraggable\":\"yes\"}},{\"Id\":\"widget-000000001\",\"title\":\"Should GetMerged\",\"behaviour\":{\"Id\":\"behaviour1\",\"isVisible\":true,\"isDraggable\":\"no\",\"extraPropertyInLeft\":\"yep i am extra\"}},{\"Id\":\"widget-22224476843\",\"title\":\"B\",\"behaviour\":{\"Id\":\"behaviour2\",\"isVisible\":true,\"isDraggable\":\"no\"}}]},\"children\":[{\"isVisible\":true,\"type\":\"text\",\"Id\":\"widget-16784476843-field-16784479250\",\"label\":\"New Field Name\",\"behaviour\":{\"Id\":\"behavior1\",\"autoRender\":true},\"attributes\":{\"Id\":\"attributes1\",\"disable\":false,\"textAlign\":\"right\"}}],\"breadCrumb\":{\"Id\":\"breadCrumb1\",\"navigation\":{\"Id\":\"navigation1\",\"sections\":[{\"Id\":\"sections1\",\"routePath\":\"#\",\"title\":\"SomeTitle\",\"emitEvent\":false}]},\"heading\":{\"Id\":\"heading1\",\"title\":\"cool heading\",\"secondaryTitle\":null}},\"toolbar\":{\"Id\":\"t1\",\"toolbarName\":\"Fancy Toolbar\"}}]]]]]}}},\"level2b\":{\"level3c\":{\"level4e\":{\"level5i\":\"value9\",\"level5j\":\"value10\"},\"level4f\":{\"level5k\":\"value11\",\"level5l\":\"value12\"}},\"level3d\":{\"level4g\":{\"level5m\":\"value13\",\"level5n\":\"value14\"},\"level4h\":{\"level5o\":\"value15\",\"level5p\":\"value16\"}}}}}");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
         }
+        [Fact]
+        public void TestMerge9()
+        {
+            // Arrange
+            JsonComparer obj = new JsonComparer();
+            var objParsed = JObject.Parse("{\"left\":[1,2,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"selected\":[{\"Path\":\"[2]\",\"LeftValue\":{\"Id\":\"10005\",\"name\":\"Charlie\"},\"RightValue\":3},{\"Path\":\"[3]\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"10005\",\"name\":\"Charlie!!\"}}]}");
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
+            // Act
+            JToken result = obj.Merge(left, selectedDiffs);
+            JToken expectedResult = JToken.Parse("[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie!!\"}]");
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+        }
     }
 }

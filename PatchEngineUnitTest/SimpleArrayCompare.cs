@@ -59,5 +59,21 @@ namespace PatchEngineUnitTest
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
+        [Fact]
+        public void TestCompare4()
+        {
+            // Arrange
+            var objParsed = JObject.Parse("{\"left\":{\"simpleObject\":{\"level1a\":{\"level2a\":{\"level3a\":\"level 3\"}},\"simpleArray\":[1,2,3,[10,20,[100,200]]]},\"identityObject\":{\"Id\":\"10001\",\"name\":\"Arbaaz\",\"simpleArrayInsideIdentityObject\":[4,5,6,[30,40,[300,400]]],\"nestedObject\":{\"Id\":\"10002\",\"name\":\"NestedIdentityObject\",\"details\":{\"age\":25,\"city\":\"San Francisco\"}}},\"arrayWithIdentityObjects\":[{\"Id\":\"10003\",\"name\":\"Alice\"},{\"Id\":\"10004\",\"name\":\"Bob\",\"simpleArrayInsideIdentityObject\":[7,8,9,[50,60,[500,600]]]}],\"mixedArray\":[1,2,3,{\"mixedArray\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"},{\"Id\":\"10006\",\"name\":\"Diana\",\"simpleArrayInsideIdentityObject\":[11,12,13,[70,80,[700,800]]],\"nestedObject\":{\"Id\":\"10007\",\"name\":\"NestedIdentityObject2\",\"details\":{\"age\":30,\"city\":\"New York\"}}},[14,15,16,[90,100,[900,1000]]],{\"level1b\":{\"level2b\":{\"level3b\":\"level 3\"}}}]}]},\"right\":{\"simpleObject\":{\"level1a\":{\"level2a\":{\"level3a\":\"level 3\"}},\"simpleArray\":[1,2,3,[10,20,[100,200]]]},\"identityObject\":{\"Id\":\"10001\",\"name\":\"Arbaaz\",\"simpleArrayInsideIdentityObject\":[4,5,6,[30,40,[300,400]]],\"nestedObject\":{\"Id\":\"10002\",\"name\":\"NestedIdentityObject\",\"details\":{\"age\":25,\"city\":\"San Francisco!!!\"}}},\"arrayWithIdentityObjects\":[{\"Id\":\"10003\",\"name\":\"Alice\"},{\"Id\":\"10004\",\"name\":\"Bob\",\"simpleArrayInsideIdentityObject\":[7,8,9,[50,60,[500]]]}],\"mixedArray\":[1,2,3,{\"mixedArray\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"},{\"Id\":\"10006\",\"name\":\"Diana\",\"simpleArrayInsideIdentityObject\":[11,12,13,[70,80,[700111,800]]],\"nestedObject\":{\"Id\":\"10007\",\"name\":\"NestedIdentityObject2\",\"details\":{\"age\":30,\"city\":\"New York\"}}},[14,15,16,[90,100,[900,1000]]],{\"level1b\":{\"level2b\":{\"level3b\":\"level 3\"}}}]}]}}");
+
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var right = JToken.Parse(objParsed["right"].ToString());
+
+            // Act
+            JToken result = new JsonComparer().Compare(left, right, "");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"identityObject.nestedObject.details.city\",\"LeftValue\":\"San Francisco\",\"RightValue\":\"San Francisco!!!\"},{\"Path\":\"arrayWithIdentityObjects:10004.simpleArrayInsideIdentityObject[3][2][1]\",\"LeftValue\":600,\"RightValue\":null},{\"Path\":\"mixedArray[3].mixedArray[4].simpleArrayInsideIdentityObject[3][2][0]\",\"LeftValue\":700,\"RightValue\":700111}]");
+
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+
+        }
     }
 }

@@ -80,7 +80,7 @@ namespace PatchEngine.Core
                     }
                     else if (parent.Type == JTokenType.Array)
                     {
-                        if (((JArray)parent).isArrayWithoutId()) // simple array
+                        if (((JArray)parent).isArrayWithoutId() || ((JArray)parent).isMixedArray()) // simple array
                         {
                             //leftValue RightValue path
                             JArray parentArray = (JArray)parent;
