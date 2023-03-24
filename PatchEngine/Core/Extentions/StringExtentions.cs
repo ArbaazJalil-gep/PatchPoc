@@ -70,6 +70,7 @@
         {
             string[] parts = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             string lastPart = parts.LastOrDefault();
+            if (lastPart == null) return "";
             return lastPart.Contains(":") ? lastPart.Split(':')[1] : lastPart;
         }
         public static string GetLastArrayIndexSegment(this string path)
@@ -79,6 +80,50 @@
 
             return lastPart.isArrayIndexSegmet() ? lastPart.RemoveIndex() : lastPart;
         }
+
+        public static int ReturnLastIndexValue(this string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("The input string must not be null or empty.");
+            }
+
+            int lastIndex = -1;
+            int currentIndex = 0;
+
+            while (currentIndex < path.Length)
+            {
+                int lastOpenBracket = path.IndexOf('[', currentIndex);
+                int lastCloseBracket = path.IndexOf(']', currentIndex);
+
+                if (lastOpenBracket != -1 && lastCloseBracket != -1 && lastCloseBracket > lastOpenBracket)
+                {
+                    string indexString = path.Substring(lastOpenBracket + 1, lastCloseBracket - lastOpenBracket - 1);
+                    if (int.TryParse(indexString, out int index))
+                    {
+                        lastIndex = index;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("The input string does not contain a valid integer index.");
+                    }
+
+                    currentIndex = lastCloseBracket + 1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //if (lastIndex == -1)
+            //{
+            //    throw new ArgumentException("The input string does not contain a valid index.");
+            //}
+
+            return lastIndex;
+        }
+
     }
 
 }

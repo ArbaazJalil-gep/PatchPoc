@@ -23,8 +23,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5g\",\"LeftValue\":\"value7\",\"RightValue\":\"value7000\"},{\"Path\":\"level1.level2b.level2extra\",\"LeftValue\":null,\"RightValue\":\"righthandside\"}]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5g\",\"LeftValue\":\"value7\",\"RightValue\":\"value7000\",\"Op\":\"replace\"},{\"Path\":\"level1.level2b.level2extra\",\"LeftValue\":null,\"RightValue\":\"righthandside\",\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -42,8 +41,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5g\",\"LeftValue\":\"value7\",\"RightValue\":\"value7000\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[0][0][0][1][0]\",\"LeftValue\":3,\"RightValue\":3000},{\"Path\":\"level1.level2a.level3b.level4d.level5h[0][1][1][0][0]\",\"LeftValue\":13,\"RightValue\":13000},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][0][1][1][0]\",\"LeftValue\":23,\"RightValue\":2300},{\"Path\":\"level1.level2b.level2extra\",\"LeftValue\":null,\"RightValue\":\"righthandside\"}]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5g\",\"LeftValue\":\"value7\",\"RightValue\":\"value7000\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[0][0][0][1][0]\",\"LeftValue\":3,\"RightValue\":3000,\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[0][1][1][0][0]\",\"LeftValue\":13,\"RightValue\":13000,\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][0][1][1][0]\",\"LeftValue\":23,\"RightValue\":2300,\"Op\":\"replace\"},{\"Path\":\"level1.level2b.level2extra\",\"LeftValue\":null,\"RightValue\":\"righthandside\",\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -61,8 +59,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1][1].level1a.level2a.level3a\",\"LeftValue\":\"level 3\",\"RightValue\":\"LEVEL 3\"}]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1][1].level1a.level2a.level3a\",\"LeftValue\":\"level 3\",\"RightValue\":\"LEVEL 3\",\"Op\":\"replace\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -80,8 +77,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.layout\",\"LeftValue\":\"12\",\"RightValue\":\"13\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-16784476843.title\",\"LeftValue\":\"First\",\"RightValue\":\"A\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-000000001\",\"LeftValue\":{\"Id\":\"widget-000000001\",\"title\":\"Should GetMerged\",\"behaviour\":{\"Id\":\"behaviour1\",\"isVisible\":true,\"isDraggable\":\"no\",\"extraPropertyInLeft\":\"yep i am extra\"}},\"RightValue\":null},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-22224476843\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"widget-22224476843\",\"title\":\"B\",\"behaviour\":{\"Id\":\"behaviour2\",\"isVisible\":true,\"isDraggable\":\"no\"}}},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.label\",\"LeftValue\":\"Field Name\",\"RightValue\":\"New Field Name\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.behaviour.autoRender\",\"LeftValue\":false,\"RightValue\":true},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.attributes.textAlign\",\"LeftValue\":\"left\",\"RightValue\":\"right\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.navigation.sections:sections1.title\",\"LeftValue\":\"untitled\",\"RightValue\":\"SomeTitle\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.heading.title\",\"LeftValue\":\"Untitled\",\"RightValue\":\"cool heading\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.heading.secondaryTitle\",\"LeftValue\":\"SecondTitle\",\"RightValue\":null},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.toolbar\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"t1\",\"toolbarName\":\"Fancy Toolbar\"}}]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.layout\",\"LeftValue\":\"12\",\"RightValue\":\"13\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-16784476843.title\",\"LeftValue\":\"First\",\"RightValue\":\"A\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-000000001\",\"LeftValue\":{\"Id\":\"widget-000000001\",\"title\":\"Should GetMerged\",\"behaviour\":{\"Id\":\"behaviour1\",\"isVisible\":true,\"isDraggable\":\"no\",\"extraPropertyInLeft\":\"yep i am extra\"}},\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.widgetManager.widgets:widget-22224476843\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"widget-22224476843\",\"title\":\"B\",\"behaviour\":{\"Id\":\"behaviour2\",\"isVisible\":true,\"isDraggable\":\"no\"}},\"Op\":\"add\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.label\",\"LeftValue\":\"Field Name\",\"RightValue\":\"New Field Name\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.behaviour.autoRender\",\"LeftValue\":false,\"RightValue\":true,\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.children:widget-16784476843-field-16784479250.attributes.textAlign\",\"LeftValue\":\"left\",\"RightValue\":\"right\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.navigation.sections:sections1.title\",\"LeftValue\":\"untitled\",\"RightValue\":\"SomeTitle\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.heading.title\",\"LeftValue\":\"Untitled\",\"RightValue\":\"cool heading\",\"Op\":\"replace\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.breadCrumb.heading.secondaryTitle\",\"LeftValue\":\"SecondTitle\",\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"level1.level2a.level3b.level4d.level5h[1][1][1][1]:1.toolbar\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"t1\",\"toolbarName\":\"Fancy Toolbar\"},\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -99,8 +95,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"[2]\",\"LeftValue\":{\"Id\":\"10005\",\"name\":\"Charlie\"},\"RightValue\":3},{\"Path\":\"[3]\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"10005\",\"name\":\"Charlie!!\"}}]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[2]\",\"LeftValue\":{\"Id\":\"10005\",\"name\":\"Charlie\"},\"RightValue\":3,\"Op\":\"replace\"},{\"Path\":\"\\/\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"10005\",\"name\":\"Charlie!!\"},\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }

@@ -12,6 +12,7 @@ namespace PatchEngine.Core
         public string Path { get; set; }
         public JToken LeftValue { get; set; }
         public JToken RightValue { get; set; }
+        public string Op { get; set; }
     }
     public class JsonComparer : IJsonComparer
     {
@@ -25,7 +26,9 @@ namespace PatchEngine.Core
                 {
                     ["Path"] = path,
                     ["LeftValue"] = left,
-                    ["RightValue"] = right
+                    ["RightValue"] = right,
+                    ["Op"] = "replace"
+
                 });
             }
             else if (left.Type == JTokenType.Object)
@@ -43,7 +46,8 @@ namespace PatchEngine.Core
                 {
                     ["Path"] = path,
                     ["LeftValue"] = left,
-                    ["RightValue"] = right
+                    ["RightValue"] = right,
+                    ["Op"] = "replace"
                 });
             }
 
@@ -76,7 +80,10 @@ namespace PatchEngine.Core
                     if (parent.Type == JTokenType.Object)
                     {
                         JObject parentObject = (JObject)parent;
-                        parentObject[propertyName] = diff.RightValue;
+                        if (diff.Op == "remove")
+                            parentObject.Remove(propertyName);
+                        else
+                            parentObject[propertyName] = diff.RightValue;
                     }
                     else if (parent.Type == JTokenType.Array)
                     {
@@ -84,16 +91,26 @@ namespace PatchEngine.Core
                         {
                             //leftValue RightValue path
                             JArray parentArray = (JArray)parent;
-                            int index = diff.Path.ReturnIndexValue(level + 1);
+                            int index = diff.Path.ReturnLastIndexValue(); // diff.Path.ReturnIndexValue(level + 1);CHECK
 
-                            if (parentArray.Count > index)
+                            if (parentArray.Count > index && index != -1)
                             {
+                                if (diff.Op == "remove")
+                                {
+                                    parentArray.RemoveAt(index);
+                                    continue;
+                                }
+
                                 if (parent[index].Type == JTokenType.Array)
                                 {
-                                    parent[index] = Merge(parent[index], new List<Difference>() { diff }, level + 1);
+                                    if (diff.Op == "replace")
+                                        parent[index] = Merge(parent[index], new List<Difference>() { diff }, level + 1);
+                                    else if (diff.Op == "add")
+                                        ((JArray)parent[index]).Add(diff.RightValue); //[["phy"],"a",["C"]]
                                 }
                                 else
                                 {
+
                                     parentArray[index] = diff.RightValue;
                                 }
                             }
@@ -109,7 +126,12 @@ namespace PatchEngine.Core
 
                             if (index >= 0)
                             {
-                                parentArray[index] = diff.RightValue.HasValues ? diff.RightValue : diff.LeftValue;
+                                if (diff.Op == "remove")
+                                {
+                                    parentArray.RemoveAt(index);
+                                }
+                                else
+                                    parentArray[index] = diff.RightValue.HasValues ? diff.RightValue : diff.LeftValue;
                             }
                             else
                             {

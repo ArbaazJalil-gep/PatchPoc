@@ -35,7 +35,7 @@ namespace PatchEngine.Implementations
                 if (leftObject.TryGetValue(key, out JToken leftValue))
                 {
                     if (rightObject.TryGetValue(key, out JToken rightValue))
-                    {
+                    {                        
                         _differences.Merge(base.Compare(leftValue, rightValue, childPath));
                     }
                     else
@@ -44,7 +44,8 @@ namespace PatchEngine.Implementations
                         {
                             ["Path"] = childPath,
                             ["LeftValue"] = leftValue,
-                            ["RightValue"] = null
+                            ["RightValue"] = null,
+                            ["Op"]= "remove"
                         });
                     }
                 }
@@ -54,7 +55,8 @@ namespace PatchEngine.Implementations
                     {
                         ["Path"] = childPath,
                         ["LeftValue"] = null,
-                        ["RightValue"] = rightObject[key]
+                        ["RightValue"] = rightObject[key],
+                        ["Op"] = "add"
                     });
                 }
 

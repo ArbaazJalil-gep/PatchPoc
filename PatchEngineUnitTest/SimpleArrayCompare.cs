@@ -14,14 +14,14 @@ namespace PatchEngineUnitTest
         public void TestCompare()
         {
             // Arrange
-            var objParsed = JObject.Parse("{\n    \"left\": [\"geo\",[\"phy\",\"cm\"],\"a\",[\"C\"]],\n    \"right\":[\"geo\",[\"phy\",\"chem\", \"bio\"],\"b\",[\"c\",\"D\"]]\n}\n");
+            var objParsed = JObject.Parse("{\"left\":[\"geo\",[\"phy\",\"cm\"],\"a\",[\"C\"]],\"right\":[\"geo\",[\"phy\",\"chem\",\"bio\"],\"b\",[\"c\",\"D\"]]}");
 
             var left = JToken.Parse(objParsed["left"].ToString());
             var right = JToken.Parse(objParsed["right"].ToString());
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"[1][1]\",\"LeftValue\":\"cm\",\"RightValue\":\"chem\",\"Op\":\"replace\"},{\"Path\":\"[1][2]\",\"LeftValue\":null,\"RightValue\":\"bio\",\"Op\":\"add\"},{\"Path\":\"[2]\",\"LeftValue\":\"a\",\"RightValue\":\"b\",\"Op\":\"replace\"},{\"Path\":\"[3]\",\"LeftValue\":[\"C\"],\"RightValue\":[\"c\",\"D\"],\"Op\":\"replace\"}]");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[1][1]\",\"LeftValue\":\"cm\",\"RightValue\":\"chem\",\"Op\":\"replace\"},{\"Path\":\"[1]\",\"LeftValue\":null,\"RightValue\":\"bio\",\"Op\":\"add\"},{\"Path\":\"[2]\",\"LeftValue\":\"a\",\"RightValue\":\"b\",\"Op\":\"replace\"},{\"Path\":\"[3][0]\",\"LeftValue\":\"C\",\"RightValue\":\"c\",\"Op\":\"replace\"},{\"Path\":\"[3]\",\"LeftValue\":null,\"RightValue\":\"D\",\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -52,7 +52,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"[3].name\",\"LeftValue\":\"Charlie\",\"RightValue\":\"Charlie!!\"}]");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[3].name\",\"LeftValue\":\"Charlie\",\"RightValue\":\"Charlie!!\",\"Op\":\"replace\"}]");
 
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
@@ -68,7 +68,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"identityObject.nestedObject.details.city\",\"LeftValue\":\"San Francisco\",\"RightValue\":\"San Francisco!!!\"},{\"Path\":\"arrayWithIdentityObjects:10004.simpleArrayInsideIdentityObject[3][2][1]\",\"LeftValue\":600,\"RightValue\":null},{\"Path\":\"mixedArray[3].mixedArray[4].simpleArrayInsideIdentityObject[3][2][0]\",\"LeftValue\":700,\"RightValue\":700111}]");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"identityObject.nestedObject.details.city\",\"LeftValue\":\"San Francisco\",\"RightValue\":\"San Francisco!!!\",\"Op\":\"replace\"},{\"Path\":\"arrayWithIdentityObjects:10004.simpleArrayInsideIdentityObject[3][2][1]\",\"LeftValue\":600,\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"mixedArray[3].mixedArray[4].simpleArrayInsideIdentityObject[3][2][0]\",\"LeftValue\":700,\"RightValue\":700111,\"Op\":\"replace\"}]");
 
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 

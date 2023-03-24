@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatchEngine", "PatchEngine\PatchEngine.csproj", "{59273F53-1B70-4F21-9765-C5D4222DD9FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchEngineUnitTest", "PatchEngineUnitTest\PatchEngineUnitTest.csproj", "{F2CD2ADB-4C0B-4997-89A8-ADC70E8584A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatchEngineUnitTest", "PatchEngineUnitTest\PatchEngineUnitTest.csproj", "{F2CD2ADB-4C0B-4997-89A8-ADC70E8584A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchEnginePlanB", "PatchEnginePlanB\PatchEnginePlanB.csproj", "{80116F35-D267-4722-9C77-F65DF9235608}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F2CD2ADB-4C0B-4997-89A8-ADC70E8584A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2CD2ADB-4C0B-4997-89A8-ADC70E8584A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2CD2ADB-4C0B-4997-89A8-ADC70E8584A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80116F35-D267-4722-9C77-F65DF9235608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80116F35-D267-4722-9C77-F65DF9235608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80116F35-D267-4722-9C77-F65DF9235608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80116F35-D267-4722-9C77-F65DF9235608}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
