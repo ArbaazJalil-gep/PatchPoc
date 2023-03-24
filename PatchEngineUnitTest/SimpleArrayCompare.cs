@@ -21,8 +21,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[\n    {\n        \"Path\": \"[1][1]\",\n        \"LeftValue\": \"cm\",\n        \"RightValue\": \"chem\"\n    },\n    {\n        \"Path\": \"[1][2]\",\n        \"LeftValue\": null,\n        \"RightValue\": \"bio\"\n    },\n    {\n        \"Path\": \"[2]\",\n        \"LeftValue\": \"a\",\n        \"RightValue\": \"b\"\n    },\n    {\n        \"Path\": \"[3][0]\",\n        \"LeftValue\": \"C\",\n        \"RightValue\": \"c\"\n    },\n    {\n        \"Path\": \"[3][1]\",\n        \"LeftValue\": null,\n        \"RightValue\": \"D\"\n    }\n]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[1][1]\",\"LeftValue\":\"cm\",\"RightValue\":\"chem\",\"Op\":\"replace\"},{\"Path\":\"[1][2]\",\"LeftValue\":null,\"RightValue\":\"bio\",\"Op\":\"add\"},{\"Path\":\"[2]\",\"LeftValue\":\"a\",\"RightValue\":\"b\",\"Op\":\"replace\"},{\"Path\":\"[3]\",\"LeftValue\":[\"C\"],\"RightValue\":[\"c\",\"D\"],\"Op\":\"replace\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -37,8 +36,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[\n    {\n        \"Path\": \"[0][0][0][1][0]\",\n        \"LeftValue\": 3,\n        \"RightValue\": 30\n    },\n    {\n        \"Path\": \"[0][1][1][1][0]\",\n        \"LeftValue\": 15,\n        \"RightValue\": 150\n    },\n    {\n        \"Path\": \"[1][1][0][1][1]\",\n        \"LeftValue\": 28,\n        \"RightValue\": 280\n    }\n]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"[0][0][0][1][0]\",\"LeftValue\":3,\"RightValue\":30,\"Op\":\"replace\"},{\"Path\":\"[0][1][1][1][0]\",\"LeftValue\":15,\"RightValue\":150,\"Op\":\"replace\"},{\"Path\":\"[1][1][0][1][1]\",\"LeftValue\":28,\"RightValue\":280,\"Op\":\"replace\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }

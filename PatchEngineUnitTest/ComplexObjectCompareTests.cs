@@ -21,7 +21,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[\n    {\n        \"Path\": \"name\",\n        \"LeftValue\": \"arbaaz\",\n        \"RightValue\": \"ARBAAZ\"\n    },\n    {\n        \"Path\": \"phone\",\n        \"LeftValue\": \"9004715915\",\n        \"RightValue\": null\n    },\n    {\n        \"Path\": \"details.education.highschool\",\n        \"LeftValue\": \"ICSE\",\n        \"RightValue\": \"CBSE\"\n    },\n    {\n        \"Path\": \"details.education.subjects[1]\",\n        \"LeftValue\": \"chem\",\n        \"RightValue\": \"Bio\"\n    },\n    {\n        \"Path\": \"address\",\n        \"LeftValue\": null,\n        \"RightValue\": \"Mumbai\"\n    }\n]");
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"name\",\"LeftValue\":\"arbaaz\",\"RightValue\":\"ARBAAZ\",\"Op\":\"replace\"},{\"Path\":\"phone\",\"LeftValue\":\"9004715915\",\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"details.education.highschool\",\"LeftValue\":\"ICSE\",\"RightValue\":\"CBSE\",\"Op\":\"replace\"},{\"Path\":\"details.education.subjects[1]\",\"LeftValue\":\"chem\",\"RightValue\":\"Bio\",\"Op\":\"replace\"},{\"Path\":\"details.education.subjects[2]\",\"LeftValue\":\"math\",\"RightValue\":\"math\",\"Op\":\"replace\"},{\"Path\":\"address\",\"LeftValue\":null,\"RightValue\":\"Mumbai\",\"Op\":\"add\"}]");
 
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
@@ -40,8 +40,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[\n    {\n        \"Path\": \"name\",\n        \"LeftValue\": \"arbaaz\",\n        \"RightValue\": \"ARBAAZ\"\n    },\n    {\n        \"Path\": \"phone\",\n        \"LeftValue\": \"9004715915\",\n        \"RightValue\": null\n    },\n    {\n        \"Path\": \"details.education.highschool\",\n        \"LeftValue\": \"ICSE\",\n        \"RightValue\": \"CBSE\"\n    },\n    {\n        \"Path\": \"details.education.subjects:phy.fullname\",\n        \"LeftValue\": \"physics\",\n        \"RightValue\": \"Physics\"\n    },\n    {\n        \"Path\": \"details.education.subjects:math\",\n        \"LeftValue\": null,\n        \"RightValue\": {\n            \"Id\": \"math\",\n            \"fullname\": \"Mathmatics\"\n        }\n    },\n    {\n        \"Path\": \"details.education.extraPropOnRight\",\n        \"LeftValue\": null,\n        \"RightValue\": \"yep\"\n    },\n    {\n        \"Path\": \"address\",\n        \"LeftValue\": null,\n        \"RightValue\": \"Mumbai\"\n    }\n]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"name\",\"LeftValue\":\"arbaaz\",\"RightValue\":\"ARBAAZ\",\"Op\":\"replace\"},{\"Path\":\"phone\",\"LeftValue\":\"9004715915\",\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"details.education.highschool\",\"LeftValue\":\"ICSE\",\"RightValue\":\"CBSE\",\"Op\":\"replace\"},{\"Path\":\"details.education.subjects:phy.fullname\",\"LeftValue\":\"physics\",\"RightValue\":\"Physics\",\"Op\":\"replace\"},{\"Path\":\"details.education.subjects:math\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"math\",\"fullname\":\"Mathmatics\"},\"Op\":\"add\"},{\"Path\":\"details.education.extraPropOnRight\",\"LeftValue\":null,\"RightValue\":\"yep\",\"Op\":\"add\"},{\"Path\":\"address\",\"LeftValue\":null,\"RightValue\":\"Mumbai\",\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
@@ -59,8 +58,7 @@ namespace PatchEngineUnitTest
 
             // Act
             JToken result = new JsonComparer().Compare(left, right, "");
-            JToken expectedResult = JToken.Parse("[{\"Path\":\"name\",\"LeftValue\":\"arbaaz\",\"RightValue\":\"ARBAAZ\"},{\"Path\":\"phone\",\"LeftValue\":\"9004715915\",\"RightValue\":null},{\"Path\":\"details.education.highschool\",\"LeftValue\":\"ICSE\",\"RightValue\":\"CBSE\"},{\"Path\":\"details.education.subjects[0].fullname\",\"LeftValue\":\"physics\",\"RightValue\":\"Physics\"},{\"Path\":\"details.education.subjects[1]\",\"LeftValue\":null,\"RightValue\":{\"fullname\":\"Mathmatics\"}},{\"Path\":\"details.education.extraPropOnRight\",\"LeftValue\":null,\"RightValue\":\"yep\"},{\"Path\":\"address\",\"LeftValue\":null,\"RightValue\":\"Mumbai\"}]");
-
+            JToken expectedResult = JToken.Parse("[{\"Path\":\"name\",\"LeftValue\":\"arbaaz\",\"RightValue\":\"ARBAAZ\",\"Op\":\"replace\"},{\"Path\":\"phone\",\"LeftValue\":\"9004715915\",\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"details.education.highschool\",\"LeftValue\":\"ICSE\",\"RightValue\":\"CBSE\",\"Op\":\"replace\"},{\"Path\":\"details.education.subjects[0].fullname\",\"LeftValue\":\"physics\",\"RightValue\":\"Physics\",\"Op\":\"replace\"},{\"Path\":\"details.education.subjects[1]\",\"LeftValue\":null,\"RightValue\":{\"fullname\":\"Mathmatics\"},\"Op\":\"add\"},{\"Path\":\"details.education.extraPropOnRight\",\"LeftValue\":null,\"RightValue\":\"yep\",\"Op\":\"add\"},{\"Path\":\"address\",\"LeftValue\":null,\"RightValue\":\"Mumbai\",\"Op\":\"add\"}]");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
 
         }
