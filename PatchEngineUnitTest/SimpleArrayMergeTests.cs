@@ -192,14 +192,12 @@ namespace PatchEngineUnitTest
             // Arrange
             JsonComparer obj = new JsonComparer();
             var objParsed = JObject.Parse("{\"left\":[[[[[1,2],[3,4]],[[5,6],[7,8]]],[[[9,10],[11,12]],[[13,14],[15,16]]]],[[[[17,18],[19,20]],[[21,22],[23,24]]],[[[25,26],[27,28]],[[29,30],[31,32]]]]],\"selected\":[{\"Path\":\"[0][0][0][1][0]\",\"LeftValue\":3,\"RightValue\":30},{\"Path\":\"[0][1][1][1][0]\",\"LeftValue\":15,\"RightValue\":150},{\"Path\":\"[1][1][0][1][1]\",\"LeftValue\":28,\"RightValue\":280}]}");
-
             var left = JToken.Parse(objParsed["left"].ToString());
             var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
             // Act
             JToken result = obj.Merge(left, selectedDiffs);
 
             // Act
-
             JToken expectedResult = JToken.Parse("[[[[[1,2],[30,4]],[[5,6],[7,8]]],[[[9,10],[11,12]],[[13,14],[150,16]]]],[[[[17,18],[19,20]],[[21,22],[23,24]]],[[[25,26],[27,280]],[[29,30],[31,32]]]]]");
 
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
@@ -236,6 +234,27 @@ namespace PatchEngineUnitTest
             JToken expectedResult = JToken.Parse("{\"simpleObject\":{\"level1a\":{\"level2a\":{\"level3a\":\"level 3\"}},\"simpleArray\":[1,2,3,[10,20,[100,200]]]},\"identityObject\":{\"Id\":\"10001\",\"name\":\"Arbaaz\",\"simpleArrayInsideIdentityObject\":[4,5,6,[30,40,[400]]],\"nestedObject\":{\"Id\":\"10002\",\"name\":\"NestedIdentityObject\",\"details\":{\"age\":25,\"city\":\"San Francisco!!!!\"}}},\"arrayWithIdentityObjects\":[{\"Id\":\"10003\",\"name\":\"Alice\"},{\"Id\":\"10004\",\"name\":\"Bob\",\"simpleArrayInsideIdentityObject\":[7,8,9,[50,60,[500,600]]]}],\"mixedArray\":[1,2,3,{\"mixedArray\":[1,2,3,{\"Id\":\"10005\",\"name\":\"Charlie\"},{\"Id\":\"10006\",\"name\":\"Diana\",\"simpleArrayInsideIdentityObject\":[11,12,13,[70,80,[700,800]]],\"nestedObject\":{\"Id\":\"10007\",\"name\":\"NestedIdentityObject2\",\"details\":{\"age\":30,\"city\":\"New York\"}}},[14,15,16,[90,100,[900,1000]]],{\"level1b\":{\"level2b\":{\"level3b\":\"level 3\"}}}]}]}");
             Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
         }
+
+        [Fact]
+        public void TestMerge9()
+        {
+            // Arrange
+            JsonComparer obj = new JsonComparer();
+            var objParsed = JObject.Parse("{\"left\":{\"property1\":{\"property2\":{\"subjects\":[1,2,3,4],\"property3\":\"value\"}}},\"selected\":[{\"Path\":\"property1.property2.subjects[1]\",\"LeftValue\":2,\"RightValue\":4,\"Op\":\"replace\"},{\"Path\":\"property1.property2.subjects[2]\",\"LeftValue\":3,\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"property1.property2.subjects[3]\",\"LeftValue\":4,\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"property1.property2.property3\",\"LeftValue\":\"value\",\"RightValue\":null,\"Op\":\"remove\"},{\"Path\":\"property1.property2.AddedProp\",\"LeftValue\":null,\"RightValue\":\"addded\",\"Op\":\"add\"}]}");
+
+            var left = JToken.Parse(objParsed["left"].ToString());
+            var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
+            // Act
+            JToken result = obj.Merge(left, selectedDiffs);
+
+            // Act
+
+            JToken expectedResult = JToken.Parse("{\"property1\":{\"property2\":{\"subjects\":[1,4],\"AddedProp\":\"addded\"}}}");
+
+            Assert.True(JToken.DeepEquals(result, expectedResult), "The result of the compare is incorrect.");
+
+        }
+
     }
 
 

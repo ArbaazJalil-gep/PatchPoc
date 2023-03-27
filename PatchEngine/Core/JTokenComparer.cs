@@ -53,18 +53,22 @@ namespace PatchEngine.Core
 
             return differences;
         }
-
         public JToken Merge(JToken left, List<Difference> selectedDiffs, int level = 0)
         {
             JToken merged = left.DeepClone();
             int idx = 0;
+
+            // Sort patches in descending order of indices for array operations
+            selectedDiffs = selectedDiffs.OrderByDescending(diff => diff.Path.isArrayIndexSegmet() ? diff.Path.ReturnLastIndexValue() : -1).ToList();
+
             foreach (var diff in selectedDiffs)
             {
                 JToken parent = merged.GetParent(diff.Path);
                 string propertyName = "";
+
                 if (diff.Path.isArrayIndexSegmet())
                 {
-                    propertyName = diff.Path.GetLastArrayIndexSegment(); //get index [index]
+                    propertyName = diff.Path.GetLastArrayIndexSegment();
                     if (propertyName.Contains(":"))
                     {
                         propertyName = diff.Path.GetPropertyName();
@@ -80,6 +84,7 @@ namespace PatchEngine.Core
                     if (parent.Type == JTokenType.Object)
                     {
                         JObject parentObject = (JObject)parent;
+
                         if (diff.Op == "remove")
                             parentObject.Remove(propertyName);
                         else
@@ -87,11 +92,10 @@ namespace PatchEngine.Core
                     }
                     else if (parent.Type == JTokenType.Array)
                     {
-                        if (((JArray)parent).isArrayWithoutId() || ((JArray)parent).isMixedArray()) // simple array
+                        if (((JArray)parent).isArrayWithoutId() || ((JArray)parent).isMixedArray())
                         {
-                            //leftValue RightValue path
                             JArray parentArray = (JArray)parent;
-                            int index = diff.Path.ReturnLastIndexValue(); // diff.Path.ReturnIndexValue(level + 1);CHECK
+                            int index = diff.Path.ReturnLastIndexValue();
 
                             if (parentArray.Count > index && index != -1)
                             {
@@ -104,13 +108,12 @@ namespace PatchEngine.Core
                                 if (parent[index].Type == JTokenType.Array)
                                 {
                                     if (diff.Op == "replace")
-                                        parent[index] = Merge(parent[index], new List<Difference>() { diff }, level + 1);
+                                        parent[index] = Merge(parent[index], new List<Difference> { diff }, level + 1);
                                     else if (diff.Op == "add")
-                                        ((JArray)parent[index]).Add(diff.RightValue); //[["phy"],"a",["C"]]
+                                        ((JArray)parent[index]).Add(diff.RightValue);
                                 }
                                 else
                                 {
-
                                     parentArray[index] = diff.RightValue;
                                 }
                             }
@@ -140,8 +143,10 @@ namespace PatchEngine.Core
                         }
                     }
                 }
+
                 idx++;
             }
+
             return merged;
         }
     }
