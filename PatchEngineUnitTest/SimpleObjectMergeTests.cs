@@ -60,7 +60,7 @@ namespace PatchEngineUnitTest
         {
             // Arrange
             JsonComparer obj = new JsonComparer();
-            var objParsed = JObject.Parse("{\"left\":[1,2,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"selected\":[{\"Path\":\"[2]\",\"LeftValue\":{\"Id\":\"10005\",\"name\":\"Charlie\"},\"RightValue\":3},{\"Path\":\"[3]\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"10005\",\"name\":\"Charlie!!\"}}]}");
+            var objParsed = JObject.Parse("{\"left\":[1,2,{\"Id\":\"10005\",\"name\":\"Charlie\"}],\"selected\":[{\"Path\":\"[2]\",\"LeftValue\":{\"Id\":\"10005\",\"name\":\"Charlie\"},\"RightValue\":3,\"Op\":\"replace\"},{\"Path\":\"\\/\",\"LeftValue\":null,\"RightValue\":{\"Id\":\"10005\",\"name\":\"Charlie!!\"},\"Op\":\"add\"}]}");
             var left = JToken.Parse(objParsed["left"].ToString());
             var selectedDiffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Difference>>(objParsed["selected"].ToString());
             // Act

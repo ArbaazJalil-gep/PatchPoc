@@ -53,8 +53,10 @@ namespace PatchEngine.Core
 
             return differences;
         }
+
+
         public JToken Merge(JToken left, List<Difference> selectedDiffs, int level = 0)
-        {
+            {
             JToken merged = left.DeepClone();
             int idx = 0;
 
@@ -63,7 +65,15 @@ namespace PatchEngine.Core
 
             foreach (var diff in selectedDiffs)
             {
-                JToken parent = merged.GetParent(diff.Path);
+                JToken parent = null;
+                var currToken = merged.SelectTokenByPath(diff.Path);
+               if (currToken !=null &&  currToken.Type == JTokenType.Array && diff.Op == "add")
+                {
+                    parent = merged.SelectTokenByPath(diff.Path);
+                }
+               else
+                 parent = merged.GetParent(diff.Path);
+
                 string propertyName = "";
 
                 if (diff.Path.isArrayIndexSegmet())
@@ -108,7 +118,7 @@ namespace PatchEngine.Core
                                 if (parent[index].Type == JTokenType.Array)
                                 {
                                     if (diff.Op == "replace")
-                                        parent[index] = Merge(parent[index], new List<Difference> { diff }, level + 1);
+                                        parent[index] = diff.RightValue; //Merge(parent[index], new List<Difference> { diff }, level + 1);
                                     else if (diff.Op == "add")
                                         ((JArray)parent[index]).Add(diff.RightValue);
                                 }

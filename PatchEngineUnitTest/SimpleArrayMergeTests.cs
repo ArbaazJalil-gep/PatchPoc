@@ -20,13 +20,16 @@ namespace PatchEngineUnitTest
             {
                 Path = "[2]",
                 LeftValue = JToken.Parse("3"),
-                RightValue = JToken.Parse("5")
+                RightValue = JToken.Parse("5"),
+                Op = "replace"
+
             },
             new Difference
             {
-                Path = "[3]",
+                Path = "/",
                 LeftValue = null,
-                RightValue = JToken.Parse("6")
+                RightValue = JToken.Parse("6"),
+                Op = "add"
             }
         };
 

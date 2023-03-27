@@ -159,6 +159,7 @@ namespace PatchEngine.Implementations
                 op = "add";
                 if (_leftArray.isArrayWithoutId() || _leftArray.isMixedArray()) // simple array
                 {
+                    if (op != "add")
                     if (doesPathExist(childPath)) continue;
                     _differences.Add(new JObject
                     {
